@@ -17,3 +17,5 @@ include 'services:webservice'
 */
 
 rootProject.name = 'justpost-web'
+include 'justpost-core'
+project(':justpost-core').projectDir = new File("../justpost-core")

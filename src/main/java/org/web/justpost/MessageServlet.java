@@ -8,21 +8,37 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.justpost.entities.Message;
+import org.justpost.adapters.repositories.MessageRepositoryInterface;
 
-@WebServlet("/message")
 public class MessageServlet extends HttpServlet {
+    private MessageRepositoryInterface repository;
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html");
-
-        PrintWriter out = response.getWriter();
-        out.println("Hello");
+    public MessageServlet(MessageRepositoryInterface repository) {
+        this.repository = repository;
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
 
+        Gson gson = new GsonBuilder().create();
+        gson.toJson(repository.get(null), out);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/plain");
+        String title = request.getParameter("title");
+        String message = request.getParameter("message");
+
+        repository.add(new Message(title, message));
+
+        PrintWriter out = response.getWriter();
+        out.print("OK");
     }
 }
